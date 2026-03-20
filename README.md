@@ -18,12 +18,27 @@ This toolkit adds a deterministic condensing step before LLM ingestion.
 
 ---
 
+## Mindest-Prerequisites
+
+- OpenClaw CLI installiert (für OpenClaw-Use-Cases)
+- Rust Toolchain nur für Source-Build (`rustc`, `cargo`), nicht nötig bei Release-Binary-Install
+- Linux/macOS: `curl`, `tar`
+- Windows: PowerShell 5+ und Internetzugriff auf GitHub Releases
+
 ## Quick Start
 
 ### One-liner install (copy & paste)
 
+Linux/macOS:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/skbotoc1-web/openclaw-rust-toolkit/main/scripts/install.sh | bash
+```
+
+Windows PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/skbotoc1-web/openclaw-rust-toolkit/main/scripts/install.ps1 | iex
 ```
 
 ### Manual build
@@ -89,6 +104,9 @@ This repo includes:
 - Wrapper script for instant trials (`scripts/openclaw-wrap.sh`)
 - Real host benchmark (`docs/BENCHMARK_2026-03-20.md`)
 - Community rollout guide (`docs/COMMUNITY_PLAYBOOK.md`)
+- Cross-platform install guide (`docs/CROSS_PLATFORM_INSTALL.md`)
+- Upgrade-safe integration strategy (`docs/UPGRADE_SAFE_STRATEGY.md`)
+- Compatibility matrix (`docs/COMPATIBILITY.md`)
 - Security policy + secret hygiene (`SECURITY.md`, `scripts/secret-check.sh`)
 
 If you run this in production, open an issue with:
@@ -101,8 +119,5 @@ If you run this in production, open an issue with:
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
-Copyright: Stefan Kaiser — https://stefankaiser.net
-
 
 Copyright: Stefan Kaiser — https://stefankaiser.net

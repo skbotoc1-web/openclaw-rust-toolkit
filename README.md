@@ -65,6 +65,8 @@ This repo includes:
 - OpenClaw integration rules (`docs/OPENCLAW_INTEGRATION.md`)
 - Wrapper script for instant trials (`scripts/openclaw-wrap.sh`)
 - Real host benchmark (`docs/BENCHMARK_2026-03-20.md`)
+- Community rollout guide (`docs/COMMUNITY_PLAYBOOK.md`)
+- Security policy + secret hygiene (`SECURITY.md`, `scripts/secret-check.sh`)
 
 If you run this in production, open an issue with:
 1. command classes

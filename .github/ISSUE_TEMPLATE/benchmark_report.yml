@@ -1,0 +1,50 @@
+name: Benchmark report
+about: Share before/after token savings with real workloads
+labels: [benchmark]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing data. Please remove all sensitive values before posting.
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "OpenClaw version, OS, host type"
+    validations:
+      required: true
+
+  - type: textarea
+    id: commands
+    attributes:
+      label: Command classes tested
+      placeholder: "openclaw logs, git diff, rg, find, docker logs..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Before/After metrics
+      placeholder: "chars/tokens/latency and saved %"
+    validations:
+      required: true
+
+  - type: textarea
+    id: quality
+    attributes:
+      label: Quality impact
+      placeholder: "Any missed debugging details?"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety checklist
+      options:
+        - label: I removed all secrets and private data
+          required: true
+        - label: I did not include .env values
+          required: true

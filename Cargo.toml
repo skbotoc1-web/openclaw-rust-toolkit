@@ -6,6 +6,10 @@ license = "MIT"
 description = "Optional Rust condensing layer for OpenClaw command output with activation rules and benefit reporting"
 repository = "https://github.com/skbotoc1-web/openclaw-rust-toolkit"
 
+[[bin]]
+name = "octk"
+path = "src/main.rs"
+
 [dependencies]
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }

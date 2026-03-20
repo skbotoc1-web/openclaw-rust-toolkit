@@ -20,6 +20,15 @@ And all of the following must hold:
 - No secrets exposure risk
 - Build/lint/tests pass
 
+## Hard rule: No metric, no merge
+Every behavior-impacting PR must include a before/after metric block:
+- input tokens (or chars/4 estimate)
+- output tokens
+- reduction %
+- runtime overhead
+
+If this block is missing, PR is blocked by policy.
+
 ## Anti-feature-creep rules
 - No feature that does not map to core mission or enterprise gates
 - Prefer simplification over optional complexity

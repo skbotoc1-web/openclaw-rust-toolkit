@@ -19,6 +19,15 @@ cargo test
 ## Pull request checklist
 - [ ] Explain why this improves token reduction and/or safe adoption
 - [ ] Include before/after metrics when behavior changes
+- [ ] Include runtime overhead impact (`time` before/after)
 - [ ] Keep default path simple (avoid feature creep)
 - [ ] Keep default rules conservative for debugging safety
 - [ ] Confirm alignment with `docs/PRODUCT_GUARDRAILS.md`
+
+### Mandatory PR metric block (No metric, no merge)
+```text
+Input tokens~: <x>
+Output tokens~: <y>
+Reduction: <z>%
+Runtime overhead: <t>
+```

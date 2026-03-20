@@ -11,6 +11,7 @@ This toolkit adds a deterministic condensing step before LLM ingestion.
 
 ### What you get
 - ✅ Optional activation (`auto|on|off`)
+- ✅ Installation detection rule (`RUST_TOOLKIT_DETECTED`)
 - ✅ Clear activation rules (`rules.toml`)
 - ✅ Marker flag to see usage (`RUST_TOOLKIT_USED`)
 - ✅ Benefit report (saved chars/tokens)
@@ -39,6 +40,20 @@ Windows PowerShell:
 
 ```powershell
 irm https://raw.githubusercontent.com/skbotoc1-web/openclaw-rust-toolkit/main/scripts/install.ps1 | iex
+```
+
+### Wrapper controls
+
+```bash
+# default
+OCTK_MODE=auto scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+
+# force on/off
+OCTK_MODE=on  scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+OCTK_MODE=off scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+
+# require installation (fail fast if octk missing)
+OCTK_REQUIRED=1 scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
 ```
 
 ### Manual build
@@ -110,6 +125,18 @@ This repo includes:
 - Security policy + secret hygiene (`SECURITY.md`, `scripts/secret-check.sh`)
 
 If you run this in production, open an issue with:
+1. command classes
+2. avg token savings
+3. any missed-debug incidents
+
+---
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+Copyright: Stefan Kaiser — https://stefankaiser.net
+ an issue with:
 1. command classes
 2. avg token savings
 3. any missed-debug incidents

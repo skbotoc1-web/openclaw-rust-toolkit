@@ -19,6 +19,12 @@ Use Rust Toolkit as an **optional pre-LLM layer** for high-volume outputs, with 
 
 ## Activation Rules (required)
 
+0. Installation detection (mandatory first rule):
+   - If `octk` is not installed, wrapper must emit:
+     - `[RUST_TOOLKIT_DETECTED] installed=false ...`
+     - `[RUST_TOOLKIT_USED] used=false reason=octk_not_installed ...`
+   - If `OCTK_REQUIRED=1`, fail fast with non-zero exit.
+
 1. Always ON for:
    - `openclaw logs`
    - `docker logs`

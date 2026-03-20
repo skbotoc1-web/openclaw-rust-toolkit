@@ -151,6 +151,8 @@ See: `docs/OPENCLAW_INTEGRATION.md`
 - `docs/LAST_DEPLOY_STATUS.md`
 - `docs/BENCHMARK_2026-03-20.md`
 - `docs/COMMUNITY_PLAYBOOK.md`
+- `docs/MOAT_POSITIONING.md`
+- `docs/ENTERPRISE_READINESS.md`
 - `SECURITY.md`, `scripts/secret-check.sh`
 
 If you run this in production, open an issue with:

@@ -1,0 +1,24 @@
+[activation]
+# auto | on | off is passed by CLI, this file defines thresholds and matchers
+min_input_chars = 4000
+min_input_lines = 120
+always_match = [
+  "openclaw logs",
+  "docker logs",
+  "git diff",
+  "find ",
+  "rg ",
+]
+never_match = [
+  "cat secrets",
+  "private_key",
+]
+flag = "RUST_TOOLKIT_USED"
+
+[condense]
+head_lines = 30
+tail_lines = 30
+max_lines = 180
+max_signal_lines = 80
+dedupe = true
+signal_regex = "(?i)error|warn|failed|exception|traceback|critical|denied|timeout|EACCES|ENOENT|unresolved"

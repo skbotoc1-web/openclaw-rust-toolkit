@@ -28,8 +28,15 @@ set +e
 STATUS=$?
 set -e
 
+OCTK_BIN=""
 if command -v octk >/dev/null 2>&1; then
-  cat "$TMP_OUT" | octk \
+  OCTK_BIN="$(command -v octk)"
+elif [[ -x "./target/release/openclaw-rust-toolkit" ]]; then
+  OCTK_BIN="./target/release/openclaw-rust-toolkit"
+fi
+
+if [[ -n "$OCTK_BIN" ]]; then
+  cat "$TMP_OUT" | "$OCTK_BIN" \
     --mode auto \
     --command "${CMD[*]}" \
     --rules ./rules.example.toml \

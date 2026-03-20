@@ -174,7 +174,12 @@ fn load_rules(path: Option<PathBuf>) -> Result<EffectiveRules> {
     Ok(rules)
 }
 
-fn should_use_toolkit(mode: &Mode, command: Option<&str>, input: &str, r: &EffectiveRules) -> (bool, String) {
+fn should_use_toolkit(
+    mode: &Mode,
+    command: Option<&str>,
+    input: &str,
+    r: &EffectiveRules,
+) -> (bool, String) {
     match mode {
         Mode::On => return (true, "forced_on".into()),
         Mode::Off => return (false, "forced_off".into()),
@@ -183,10 +188,16 @@ fn should_use_toolkit(mode: &Mode, command: Option<&str>, input: &str, r: &Effec
 
     let command = command.unwrap_or("").to_lowercase();
     if !command.is_empty() {
-        if r.never_match.iter().any(|n| command.contains(&n.to_lowercase())) {
+        if r.never_match
+            .iter()
+            .any(|n| command.contains(&n.to_lowercase()))
+        {
             return (false, "never_match".into());
         }
-        if r.always_match.iter().any(|a| command.contains(&a.to_lowercase())) {
+        if r.always_match
+            .iter()
+            .any(|a| command.contains(&a.to_lowercase()))
+        {
             return (true, "always_match".into());
         }
     }
@@ -258,7 +269,16 @@ fn condense(input: &str, r: &EffectiveRules) -> String {
         let mut clipped = Vec::new();
         clipped.extend(result.iter().take(keep).cloned());
         clipped.push("… [truncated] …".into());
-        clipped.extend(result.iter().rev().take(keep).cloned().collect::<Vec<_>>().into_iter().rev());
+        clipped.extend(
+            result
+                .iter()
+                .rev()
+                .take(keep)
+                .cloned()
+                .collect::<Vec<_>>()
+                .into_iter()
+                .rev(),
+        );
         result = clipped;
     }
 
@@ -275,8 +295,16 @@ fn build_report(
 ) -> UsageReport {
     let input_chars = input.chars().count();
     let output_chars = output.chars().count();
-    let input_lines = if input.is_empty() { 0 } else { input.lines().count() };
-    let output_lines = if output.is_empty() { 0 } else { output.lines().count() };
+    let input_lines = if input.is_empty() {
+        0
+    } else {
+        input.lines().count()
+    };
+    let output_lines = if output.is_empty() {
+        0
+    } else {
+        output.lines().count()
+    };
     let saved_chars = input_chars.saturating_sub(output_chars);
     let saved_percent = if input_chars == 0 {
         0.0
@@ -309,9 +337,20 @@ fn main() -> Result<()> {
         .read_to_string(&mut input)
         .context("failed to read stdin")?;
 
-    let (use_toolkit, reason) = should_use_toolkit(&cli.mode, cli.command.as_deref(), &input, &rules);
-    let output = if use_toolkit {
-        condense(&input, &rules)
+    let (should_use, reason) =
+        should_use_toolkit(&cli.mode, cli.command.as_deref(), &input, &rules);
+    let mut used = should_use;
+    let mut final_reason = reason;
+
+    let output = if should_use {
+        let condensed = condense(&input, &rules);
+        if condensed.chars().count() >= input.chars().count() {
+            used = false;
+            final_reason = "no_gain".into();
+            input.clone()
+        } else {
+            condensed
+        }
     } else {
         input.clone()
     };
@@ -319,8 +358,8 @@ fn main() -> Result<()> {
     print!("{}", output);
 
     let report = build_report(
-        use_toolkit,
-        reason,
+        used,
+        final_reason,
         cli.command.clone(),
         &input,
         &output,

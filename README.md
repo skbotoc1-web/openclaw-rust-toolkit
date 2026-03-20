@@ -1,5 +1,8 @@
 # OpenClaw Rust Toolkit (MIT)
 
+[![CI](https://github.com/skbotoc1-web/openclaw-rust-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/skbotoc1-web/openclaw-rust-toolkit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Optional Rust Layer for OpenClaw command output: **activate only when useful**, keep signal lines, and always emit a **usage + benefit report**.
 
 ## Why this exists
@@ -61,7 +64,7 @@ This repo includes:
 - Implementation spec (`docs/IMPLEMENTATION_SPEC.md`)
 - OpenClaw integration rules (`docs/OPENCLAW_INTEGRATION.md`)
 - Wrapper script for instant trials (`scripts/openclaw-wrap.sh`)
-- Reproducible before/after benchmark template
+- Real host benchmark (`docs/BENCHMARK_2026-03-20.md`)
 
 If you run this in production, open an issue with:
 1. command classes

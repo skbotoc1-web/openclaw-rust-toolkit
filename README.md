@@ -26,6 +26,18 @@ This toolkit adds a deterministic condensing step before LLM ingestion.
 - Linux/macOS: `curl`, `tar`
 - Windows: PowerShell 5+ und Internetzugriff auf GitHub Releases
 
+## Local Compute & Memory (quick view)
+
+Runtime (prebuilt binary):
+- Minimum: 1 vCPU, 256 MB RAM, ~20 MB disk
+- Recommended: 2+ vCPU, 512 MB RAM, ~100 MB disk
+
+Source build (cargo):
+- Minimum: 2 vCPU, 2 GB RAM, ~1.5 GB disk
+- Recommended: 4+ vCPU, 4 GB RAM, ~3 GB disk
+
+Full details: `docs/LOCAL_REQUIREMENTS.md`
+
 ## Quick Start
 
 ### One-liner install (copy & paste)

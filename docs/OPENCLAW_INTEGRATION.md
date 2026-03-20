@@ -9,6 +9,26 @@ Use Rust Toolkit as an **optional pre-LLM layer** for high-volume outputs, with 
 - Use toolkit when command is in `always_match` OR output crosses thresholds.
 - Skip when command is in `never_match`.
 
+## Profile presets (easy customization)
+
+- `safe`: conservative condensing, higher thresholds, more context retained.
+- `balanced`: default profile for most users.
+- `aggressive`: strongest token reduction, tighter output cap.
+
+Wrapper usage:
+
+```bash
+OCTK_PROFILE=safe scripts/openclaw-wrap.sh -- <command...>
+OCTK_PROFILE=balanced scripts/openclaw-wrap.sh -- <command...>
+OCTK_PROFILE=aggressive scripts/openclaw-wrap.sh -- <command...>
+```
+
+Custom rules override profile:
+
+```bash
+OCTK_RULES=./rules.example.toml scripts/openclaw-wrap.sh -- <command...>
+```
+
 ### 2) On
 - Force toolkit for all outputs.
 - Useful in cost-sensitive runs.

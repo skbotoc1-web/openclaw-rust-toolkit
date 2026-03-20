@@ -67,12 +67,20 @@ scripts/last-deploy-status.sh --require-success --min-assets 3 --max-age-hours 7
 
 ### Wrapper controls
 ```bash
-# default
+# default (balanced profile)
 OCTK_MODE=auto scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+
+# profile presets
+OCTK_PROFILE=safe       scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+OCTK_PROFILE=balanced   scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+OCTK_PROFILE=aggressive scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
 
 # force on/off
 OCTK_MODE=on  scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
 OCTK_MODE=off scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+
+# custom rules file (overrides profile)
+OCTK_RULES=./rules.example.toml scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
 
 # fail if toolkit is not installed
 OCTK_REQUIRED=1 scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
@@ -132,6 +140,7 @@ See: `docs/OPENCLAW_INTEGRATION.md`
 ## Included docs and assets
 - `docs/IMPLEMENTATION_SPEC.md`
 - `docs/OPENCLAW_INTEGRATION.md`
+- `docs/PROFILE_GUIDE.md`
 - `docs/ONE_LINER_INSTALL.md`
 - `docs/CROSS_PLATFORM_INSTALL.md`
 - `docs/UPGRADE_SAFE_STRATEGY.md`

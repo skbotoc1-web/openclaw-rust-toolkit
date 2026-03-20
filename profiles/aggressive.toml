@@ -1,0 +1,24 @@
+[activation]
+min_input_chars = 1500
+min_input_lines = 60
+always_match = [
+  "openclaw logs",
+  "docker logs",
+  "git diff",
+  "find ",
+  "rg ",
+  "status --json",
+]
+never_match = [
+  "cat secrets",
+  "private_key",
+]
+flag = "RUST_TOOLKIT_USED"
+
+[condense]
+head_lines = 20
+tail_lines = 20
+max_lines = 120
+max_signal_lines = 60
+dedupe = true
+signal_regex = "(?i)error|warn|failed|exception|traceback|critical|denied|timeout|EACCES|ENOENT|unresolved"

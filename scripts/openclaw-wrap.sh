@@ -12,8 +12,10 @@ set -euo pipefail
 # - Preserves original exit code
 #
 # Env controls:
-#   OCTK_MODE=auto|on|off   (default: auto)
-#   OCTK_REQUIRED=1         (fail if toolkit is not installed)
+#   OCTK_MODE=auto|on|off          (default: auto)
+#   OCTK_REQUIRED=1                (fail if toolkit is not installed)
+#   OCTK_PROFILE=safe|balanced|aggressive (default: balanced)
+#   OCTK_RULES=/path/to/rules.toml (overrides profile)
 
 if [[ "${1:-}" == "--" ]]; then
   shift
@@ -29,6 +31,27 @@ TMP_OUT=$(mktemp)
 TMP_REPORT=$(mktemp)
 OCTK_MODE="${OCTK_MODE:-auto}"
 OCTK_REQUIRED="${OCTK_REQUIRED:-0}"
+OCTK_PROFILE="${OCTK_PROFILE:-balanced}"
+OCTK_RULES="${OCTK_RULES:-}"
+
+if [[ -z "$OCTK_RULES" ]]; then
+  case "$OCTK_PROFILE" in
+    safe|balanced|aggressive)
+      OCTK_RULES="./profiles/${OCTK_PROFILE}.toml"
+      ;;
+    *)
+      echo "[RUST_TOOLKIT_ERROR] invalid OCTK_PROFILE=$OCTK_PROFILE (expected safe|balanced|aggressive)" >&2
+      rm -f "$TMP_OUT" "$TMP_REPORT"
+      exit 43
+      ;;
+  esac
+fi
+
+if [[ ! -f "$OCTK_RULES" ]]; then
+  echo "[RUST_TOOLKIT_ERROR] rules file not found: $OCTK_RULES" >&2
+  rm -f "$TMP_OUT" "$TMP_REPORT"
+  exit 44
+fi
 
 set +e
 "${CMD[@]}" >"$TMP_OUT" 2>&1
@@ -44,18 +67,18 @@ fi
 
 if [[ -n "$OCTK_BIN" ]]; then
   OCTK_VERSION="$($OCTK_BIN --version 2>/dev/null || echo unknown)"
-  echo "[RUST_TOOLKIT_DETECTED] installed=true bin=$OCTK_BIN version=$OCTK_VERSION mode=$OCTK_MODE" >&2
+  echo "[RUST_TOOLKIT_DETECTED] installed=true bin=$OCTK_BIN version=$OCTK_VERSION mode=$OCTK_MODE profile=$OCTK_PROFILE rules=$OCTK_RULES" >&2
 
   cat "$TMP_OUT" | "$OCTK_BIN" \
     --mode "$OCTK_MODE" \
     --command "${CMD[*]}" \
-    --rules ./rules.example.toml \
+    --rules "$OCTK_RULES" \
     --report-format text \
     --report-file "$TMP_REPORT" \
     --emit-flag
 else
   cat "$TMP_OUT"
-  echo "[RUST_TOOLKIT_DETECTED] installed=false mode=$OCTK_MODE" >&2
+  echo "[RUST_TOOLKIT_DETECTED] installed=false mode=$OCTK_MODE profile=$OCTK_PROFILE rules=$OCTK_RULES" >&2
   echo "[RUST_TOOLKIT_USED] used=false reason=octk_not_installed saved=0.0%" >&2
 
   if [[ "$OCTK_REQUIRED" == "1" ]]; then

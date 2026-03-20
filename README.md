@@ -42,6 +42,18 @@ Windows PowerShell:
 irm https://raw.githubusercontent.com/skbotoc1-web/openclaw-rust-toolkit/main/scripts/install.ps1 | iex
 ```
 
+### Last deploy status (post-release health)
+
+```bash
+scripts/last-deploy-status.sh
+```
+
+```powershell
+./scripts/last-deploy-status.ps1
+```
+
+Value: schneller Check, ob der letzte Release-Deploy wirklich erfolgreich war.
+
 ### Wrapper controls
 
 ```bash

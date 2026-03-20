@@ -5,6 +5,21 @@
 
 Optional Rust layer for OpenClaw command output: **activate only when useful**, preserve signal lines, and emit a **usage + savings report**.
 
+## Quick value (what you get in practice)
+- Real-world reduction: **~70–85% fewer prompt tokens** on noisy CLI output
+- Deterministic behavior (rules), not black-box summarization
+- Works as an optional external layer (upgrade-safe)
+
+## 60-second verification
+```bash
+curl -fsSL https://raw.githubusercontent.com/skbotoc1-web/openclaw-rust-toolkit/main/scripts/install.sh | bash
+OCTK_PROFILE=balanced scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+```
+
+Look for:
+- `[RUST_TOOLKIT_DETECTED] ...`
+- `[RUST_TOOLKIT_USED] ... saved=...%`
+
 ## Why this exists
 Large CLI outputs (logs/find/diff/config dumps) consume tokens quickly.
 This toolkit adds a deterministic condensing step before LLM ingestion.
@@ -154,6 +169,7 @@ See: `docs/OPENCLAW_INTEGRATION.md`
 - `docs/LAST_DEPLOY_STATUS.md`
 - `docs/BENCHMARK_2026-03-20.md`
 - `docs/COMMUNITY_PLAYBOOK.md`
+- `docs/LAUNCH_POST_EN.md`, `docs/LAUNCH_POST_DE.md`
 - `docs/MOAT_POSITIONING.md`
 - `docs/ENTERPRISE_READINESS.md`
 - `docs/PRODUCT_GUARDRAILS.md`

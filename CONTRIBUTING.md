@@ -17,6 +17,8 @@ cargo test
 ```
 
 ## Pull request checklist
-- [ ] Explain why this improves signal/cost tradeoff
+- [ ] Explain why this improves token reduction and/or safe adoption
 - [ ] Include before/after metrics when behavior changes
+- [ ] Keep default path simple (avoid feature creep)
 - [ ] Keep default rules conservative for debugging safety
+- [ ] Confirm alignment with `docs/PRODUCT_GUARDRAILS.md`

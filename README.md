@@ -156,6 +156,7 @@ See: `docs/OPENCLAW_INTEGRATION.md`
 - `docs/COMMUNITY_PLAYBOOK.md`
 - `docs/MOAT_POSITIONING.md`
 - `docs/ENTERPRISE_READINESS.md`
+- `docs/PRODUCT_GUARDRAILS.md`
 - `SECURITY.md`, `scripts/secret-check.sh`
 
 If you run this in production, open an issue with:

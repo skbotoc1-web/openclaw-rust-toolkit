@@ -7,7 +7,10 @@ Use this to quickly verify whether the latest release deployment is healthy.
 ```bash
 scripts/last-deploy-status.sh
 # or for another repo
-scripts/last-deploy-status.sh owner/repo
+scripts/last-deploy-status.sh --repo owner/repo
+
+# enforce policy (CI/cron friendly)
+scripts/last-deploy-status.sh --require-success --min-assets 3 --max-age-hours 720
 ```
 
 ## Windows PowerShell
@@ -16,6 +19,9 @@ scripts/last-deploy-status.sh owner/repo
 ./scripts/last-deploy-status.ps1
 # or for another repo
 ./scripts/last-deploy-status.ps1 -Repo owner/repo
+
+# enforce policy (CI/cron friendly)
+./scripts/last-deploy-status.ps1 -RequireSuccess -MinAssets 3 -MaxAgeHours 720
 ```
 
 ## Example output
@@ -29,5 +35,9 @@ scripts/last-deploy-status.sh owner/repo
 
 ## Value for users
 - Fast health check after each release
-- One line proof for CI/deploy status in support/debug threads
+- One-line proof for CI/deploy status in support/debug threads
 - Easy integration into cron/heartbeat checks
+
+## Automation
+This repository includes `.github/workflows/deploy-health.yml`.
+It runs every 6 hours and fails when deploy policy checks fail.

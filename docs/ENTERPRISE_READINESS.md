@@ -9,30 +9,29 @@
 - ✅ Secret hygiene policy + scanner script
 - ✅ Upgrade-safe architecture (external optional layer)
 - ✅ Clear token-savings reporting and profile presets
+- ✅ Initial behavioral test suite in Rust (`cargo test`)
+- ✅ SHA256 checksum artifacts are generated/published by release workflow
 
 ### Gaps to close
-1. **Behavioral test coverage** (currently effectively 0 tests)
-   - Needed for activation logic, no-gain safeguard, report schema, profile behavior.
-2. **Release integrity artifacts**
-   - Add `SHA256SUMS` file per release.
-3. **Artifact signing / provenance**
+1. **Behavioral test depth**
+   - Initial tests exist, but coverage should be increased (edge cases + profile regression set).
+2. **Artifact signing / provenance**
    - Add signature/attestation (e.g., cosign + provenance).
-4. **Linux ARM64 prebuilt binary**
+3. **Linux ARM64 prebuilt binary**
    - Currently source fallback only.
-5. **Supportability baseline**
+4. **Supportability baseline**
    - Versioned compatibility policy + deprecation policy + SLA-style support scope.
 
 ## Recommended acceptance gate (to call it enterprise-ready)
 - [ ] >= 20 meaningful behavioral tests covering core decision paths
-- [ ] `SHA256SUMS` published for every release
+- [x] `SHA256SUMS` published for every release
 - [ ] Signed release artifacts with documented verification steps
 - [ ] Linux ARM64 prebuilt asset in release matrix
 - [ ] Documented support/compatibility policy and security response process
 
 ## Priority plan
 ### P0
-- Add behavioral tests
-- Add SHA256SUMS generation + publish
+- Expand behavioral tests from baseline to enterprise-grade depth
 
 ### P1
 - Add signing/provenance

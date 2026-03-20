@@ -65,6 +65,9 @@ scripts/last-deploy-status.sh
 scripts/last-deploy-status.sh --require-success --min-assets 3 --max-age-hours 720
 ```
 
+### Release integrity
+Each release publishes per-target checksum files (`SHA256SUMS-<target>.txt`) alongside binaries.
+
 ### Wrapper controls
 ```bash
 # default (balanced profile)

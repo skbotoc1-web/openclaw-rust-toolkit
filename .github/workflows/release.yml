@@ -54,6 +54,18 @@ jobs:
           Copy-Item target/${{ matrix.target }}/release/octk.exe octk.exe
           Compress-Archive -Path octk.exe -DestinationPath octk-${{ matrix.target }}.zip
 
+      - name: Generate checksums (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          sha256sum octk-${{ matrix.target }}.tar.gz > SHA256SUMS-${{ matrix.target }}.txt
+
+      - name: Generate checksums (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash "octk-${{ matrix.target }}.zip" -Algorithm SHA256).Hash.ToLower()
+          "$hash  octk-${{ matrix.target }}.zip" | Out-File -FilePath "SHA256SUMS-${{ matrix.target }}.txt" -Encoding ascii
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
@@ -61,5 +73,6 @@ jobs:
           files: |
             octk-${{ matrix.target }}.tar.gz
             octk-${{ matrix.target }}.zip
+            SHA256SUMS-${{ matrix.target }}.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

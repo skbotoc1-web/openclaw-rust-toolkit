@@ -328,6 +328,32 @@ fn build_report(
     }
 }
 
+fn process_input(
+    mode: &Mode,
+    command: Option<&str>,
+    input: &str,
+    rules: &EffectiveRules,
+) -> (String, bool, String) {
+    let (should_use, reason) = should_use_toolkit(mode, command, input, rules);
+    let mut used = should_use;
+    let mut final_reason = reason;
+
+    let output = if should_use {
+        let condensed = condense(input, rules);
+        if condensed.chars().count() >= input.chars().count() {
+            used = false;
+            final_reason = "no_gain".into();
+            input.to_string()
+        } else {
+            condensed
+        }
+    } else {
+        input.to_string()
+    };
+
+    (output, used, final_reason)
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
     let rules = load_rules(cli.rules)?;
@@ -337,23 +363,8 @@ fn main() -> Result<()> {
         .read_to_string(&mut input)
         .context("failed to read stdin")?;
 
-    let (should_use, reason) =
-        should_use_toolkit(&cli.mode, cli.command.as_deref(), &input, &rules);
-    let mut used = should_use;
-    let mut final_reason = reason;
-
-    let output = if should_use {
-        let condensed = condense(&input, &rules);
-        if condensed.chars().count() >= input.chars().count() {
-            used = false;
-            final_reason = "no_gain".into();
-            input.clone()
-        } else {
-            condensed
-        }
-    } else {
-        input.clone()
-    };
+    let (output, used, final_reason) =
+        process_input(&cli.mode, cli.command.as_deref(), &input, &rules);
 
     print!("{}", output);
 
@@ -392,4 +403,81 @@ fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn mode_on_forces_use() {
+        let rules = default_rules();
+        let (use_toolkit, reason) = should_use_toolkit(&Mode::On, None, "abc", &rules);
+        assert!(use_toolkit);
+        assert_eq!(reason, "forced_on");
+    }
+
+    #[test]
+    fn mode_off_forces_skip() {
+        let rules = default_rules();
+        let (use_toolkit, reason) = should_use_toolkit(&Mode::Off, None, "abc", &rules);
+        assert!(!use_toolkit);
+        assert_eq!(reason, "forced_off");
+    }
+
+    #[test]
+    fn never_match_overrides_always_match() {
+        let rules = default_rules();
+        let command = "openclaw logs && cat secrets";
+        let (use_toolkit, reason) = should_use_toolkit(&Mode::Auto, Some(command), "abc", &rules);
+        assert!(!use_toolkit);
+        assert_eq!(reason, "never_match");
+    }
+
+    #[test]
+    fn threshold_triggers_when_input_is_large() {
+        let mut rules = default_rules();
+        rules.min_input_chars = 10;
+        let input = "12345678901";
+        let (use_toolkit, reason) = should_use_toolkit(&Mode::Auto, None, input, &rules);
+        assert!(use_toolkit);
+        assert_eq!(reason, "threshold");
+    }
+
+    #[test]
+    fn condense_keeps_signal_lines() {
+        let mut rules = default_rules();
+        rules.head_lines = 1;
+        rules.tail_lines = 1;
+        let input = "head\nnoise\nERROR boom\nmore\ntail";
+        let out = condense(input, &rules);
+        assert!(out.contains("ERROR boom"));
+    }
+
+    #[test]
+    fn no_gain_falls_back_to_original() {
+        let rules = default_rules();
+        let input = "only-one-line";
+        let (output, used, reason) = process_input(&Mode::On, Some("openclaw logs"), input, &rules);
+        assert_eq!(output, input);
+        assert!(!used);
+        assert_eq!(reason, "no_gain");
+    }
+
+    #[test]
+    fn report_fields_are_consistent() {
+        let report = build_report(
+            true,
+            "always_match".into(),
+            Some("openclaw logs".into()),
+            "abcd",
+            "ab",
+            "RUST_TOOLKIT_USED".into(),
+        );
+        assert_eq!(report.saved_chars, 2);
+        assert_eq!(report.estimated_input_tokens, 1);
+        assert_eq!(report.estimated_output_tokens, 0);
+        assert_eq!(report.flag, "RUST_TOOLKIT_USED");
+        assert!(report.saved_percent > 0.0);
+    }
 }

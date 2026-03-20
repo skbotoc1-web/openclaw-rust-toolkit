@@ -3,6 +3,7 @@ use clap::{Parser, ValueEnum};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
+use std::env;
 use std::fs;
 use std::io::{self, Read};
 use std::path::PathBuf;
@@ -96,6 +97,60 @@ struct UsageReport {
     estimated_input_tokens: usize,
     estimated_output_tokens: usize,
     flag: String,
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+enum LogLevel {
+    Error = 1,
+    Warn = 2,
+    Info = 3,
+    Debug = 4,
+}
+
+fn parse_bool_flag(v: &str) -> bool {
+    matches!(v.to_ascii_lowercase().as_str(), "1" | "true" | "on" | "yes")
+}
+
+fn effective_log_level() -> LogLevel {
+    let debug_on = env::var("OCTK_DEBUG")
+        .ok()
+        .map(|v| parse_bool_flag(&v))
+        .unwrap_or_else(|| {
+            env::var("OPENCLAW_DEBUG")
+                .ok()
+                .map(|v| parse_bool_flag(&v))
+                .unwrap_or(false)
+        });
+
+    if debug_on {
+        return LogLevel::Debug;
+    }
+
+    let raw = env::var("OCTK_LOG_LEVEL")
+        .ok()
+        .or_else(|| env::var("OPENCLAW_LOG_LEVEL").ok())
+        .unwrap_or_else(|| "warn".to_string())
+        .to_ascii_lowercase();
+
+    match raw.as_str() {
+        "error" => LogLevel::Error,
+        "warn" | "warning" => LogLevel::Warn,
+        "info" => LogLevel::Info,
+        "debug" => LogLevel::Debug,
+        _ => LogLevel::Warn,
+    }
+}
+
+fn log_msg(level: LogLevel, msg: &str) {
+    if level <= effective_log_level() {
+        let label = match level {
+            LogLevel::Error => "error",
+            LogLevel::Warn => "warn",
+            LogLevel::Info => "info",
+            LogLevel::Debug => "debug",
+        };
+        eprintln!("[octk][{}] {}", label, msg);
+    }
 }
 
 fn default_rules() -> EffectiveRules {
@@ -363,8 +418,32 @@ fn main() -> Result<()> {
         .read_to_string(&mut input)
         .context("failed to read stdin")?;
 
+    log_msg(
+        LogLevel::Debug,
+        &format!(
+            "input_received chars={} lines={} mode={:?} command={}",
+            input.chars().count(),
+            input.lines().count(),
+            cli.mode,
+            cli.command.as_deref().unwrap_or("<none>")
+        ),
+    );
+
     let (output, used, final_reason) =
         process_input(&cli.mode, cli.command.as_deref(), &input, &rules);
+
+    log_msg(
+        LogLevel::Info,
+        &format!(
+            "decision used={} reason={} chars:{}->{} tokens~:{}->{}",
+            used,
+            final_reason,
+            input.chars().count(),
+            output.chars().count(),
+            input.chars().count() / 4,
+            output.chars().count() / 4
+        ),
+    );
 
     print!("{}", output);
 
@@ -400,6 +479,10 @@ fn main() -> Result<()> {
         let json = serde_json::to_string_pretty(&report)?;
         fs::write(&path, json)
             .with_context(|| format!("failed to write report file: {}", path.display()))?;
+        log_msg(
+            LogLevel::Debug,
+            &format!("report_written path={}", path.display()),
+        );
     }
 
     Ok(())

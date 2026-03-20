@@ -12,10 +12,13 @@ set -euo pipefail
 # - Preserves original exit code
 #
 # Env controls:
-#   OCTK_MODE=auto|on|off          (default: auto)
-#   OCTK_REQUIRED=1                (fail if toolkit is not installed)
+#   OCTK_MODE=auto|on|off                 (default: auto)
+#   OCTK_REQUIRED=1                       (fail if toolkit is not installed)
 #   OCTK_PROFILE=safe|balanced|aggressive (default: balanced)
-#   OCTK_RULES=/path/to/rules.toml (overrides profile)
+#   OCTK_RULES=/path/to/rules.toml        (overrides profile)
+#   OCTK_LOG_LEVEL=error|warn|info|debug  (default: warn)
+#   OCTK_DEBUG=1                          (forces debug logging)
+# Compatible aliases: OPENCLAW_LOG_LEVEL / OPENCLAW_DEBUG
 
 if [[ "${1:-}" == "--" ]]; then
   shift

@@ -88,6 +88,11 @@ Each release publishes per-target checksum files (`SHA256SUMS-<target>.txt`) alo
 # default (balanced profile)
 OCTK_MODE=auto scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
 
+# lean logging/debug controls (OpenClaw compatible)
+OCTK_LOG_LEVEL=info  scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+OCTK_DEBUG=1         scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
+# aliases also work: OPENCLAW_LOG_LEVEL / OPENCLAW_DEBUG
+
 # profile presets
 OCTK_PROFILE=safe       scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain
 OCTK_PROFILE=balanced   scripts/openclaw-wrap.sh -- openclaw logs --limit 200 --plain

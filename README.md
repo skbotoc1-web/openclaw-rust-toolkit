@@ -33,6 +33,18 @@ cargo build --release
 cat huge-output.txt | ./target/release/octk --mode auto --command "openclaw logs --plain"
 ```
 
+### Klare Vorher/Nachher-Aussage (Token)
+
+Beispiel-Statement (echte Messung):
+
+```text
+Ohne Rust Toolkit: 12,617 Tokens
+Mit Rust Toolkit: 4,221 Tokens
+Reduktion: 66.5%
+```
+
+Details: `docs/CLEAR_METRICS_EXAMPLES.md`
+
 ### With report and custom rules
 
 ```bash
@@ -73,6 +85,7 @@ This repo includes:
 - OpenClaw integration rules (`docs/OPENCLAW_INTEGRATION.md`)
 - One-liner install doc (`docs/ONE_LINER_INSTALL.md`)
 - OpenAI token benchmark guide (`docs/OPENAI_TOKEN_BENCHMARK.md`)
+- Clear before/after token examples (`docs/CLEAR_METRICS_EXAMPLES.md`)
 - Wrapper script for instant trials (`scripts/openclaw-wrap.sh`)
 - Real host benchmark (`docs/BENCHMARK_2026-03-20.md`)
 - Community rollout guide (`docs/COMMUNITY_PLAYBOOK.md`)
@@ -88,5 +101,8 @@ If you run this in production, open an issue with:
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+Copyright: Stefan Kaiser — https://stefankaiser.net
+
 
 Copyright: Stefan Kaiser — https://stefankaiser.net

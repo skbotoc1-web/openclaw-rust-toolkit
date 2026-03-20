@@ -54,6 +54,11 @@ install_from_release() {
 install_from_source() {
   echo "[install] Falling back to source install..."
 
+  if ! command -v git >/dev/null 2>&1; then
+    echo "[install] git is required for source fallback but was not found."
+    return 1
+  fi
+
   if ! command -v cargo >/dev/null 2>&1; then
     echo "[install] Rust not found, installing rustup..."
     curl https://sh.rustup.rs -sSf | sh -s -- -y

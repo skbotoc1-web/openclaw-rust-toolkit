@@ -563,4 +563,86 @@ mod tests {
         assert_eq!(report.flag, "RUST_TOOLKIT_USED");
         assert!(report.saved_percent > 0.0);
     }
+
+    #[test]
+    fn always_match_beats_thresholds_in_auto_mode() {
+        let mut rules = default_rules();
+        rules.min_input_chars = usize::MAX;
+        rules.min_input_lines = usize::MAX;
+
+        let (use_toolkit, reason) =
+            should_use_toolkit(&Mode::Auto, Some("docker logs my-service"), "tiny", &rules);
+
+        assert!(use_toolkit);
+        assert_eq!(reason, "always_match");
+    }
+
+    #[test]
+    fn threshold_uses_line_count_when_char_count_is_low() {
+        let mut rules = default_rules();
+        rules.min_input_chars = usize::MAX;
+        rules.min_input_lines = 3;
+
+        let input = "a\nb\nc";
+        let (use_toolkit, reason) = should_use_toolkit(&Mode::Auto, None, input, &rules);
+
+        assert!(use_toolkit);
+        assert_eq!(reason, "threshold");
+    }
+
+    #[test]
+    fn condense_dedupes_consecutive_lines_when_enabled() {
+        let mut rules = default_rules();
+        rules.head_lines = 10;
+        rules.tail_lines = 0;
+        rules.max_lines = 200;
+        rules.max_signal_lines = 0;
+        rules.dedupe = true;
+
+        let input = "same\nsame\nother\nother\nend";
+        let output = condense(input, &rules);
+
+        assert!(!output.contains("same\nsame"));
+        assert!(!output.contains("other\nother"));
+        assert!(output.contains("same\nother\nend"));
+    }
+
+    #[test]
+    fn condense_without_signals_omits_signal_marker() {
+        let mut rules = default_rules();
+        rules.head_lines = 1;
+        rules.tail_lines = 1;
+
+        let input = "head\nneutral line\ntail";
+        let output = condense(input, &rules);
+
+        assert!(!output.contains("… [signal lines] …"));
+        assert!(output.contains("… [tail] …"));
+    }
+
+    #[test]
+    fn process_input_keeps_full_text_and_reason_when_not_used() {
+        let mut rules = default_rules();
+        rules.min_input_chars = usize::MAX;
+        rules.min_input_lines = usize::MAX;
+
+        let input = "short input";
+        let (output, used, reason) = process_input(&Mode::Auto, None, input, &rules);
+
+        assert_eq!(output, input);
+        assert!(!used);
+        assert_eq!(reason, "below_threshold");
+    }
+
+    #[test]
+    fn report_is_zeroed_for_empty_input() {
+        let report = build_report(false, "below_threshold".into(), None, "", "", "FLAG".into());
+
+        assert_eq!(report.input_chars, 0);
+        assert_eq!(report.output_chars, 0);
+        assert_eq!(report.input_lines, 0);
+        assert_eq!(report.output_lines, 0);
+        assert_eq!(report.saved_chars, 0);
+        assert_eq!(report.saved_percent, 0.0);
+    }
 }

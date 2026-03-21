@@ -570,12 +570,8 @@ mod tests {
         rules.min_input_chars = usize::MAX;
         rules.min_input_lines = usize::MAX;
 
-        let (use_toolkit, reason) = should_use_toolkit(
-            &Mode::Auto,
-            Some("docker logs my-service"),
-            "tiny",
-            &rules,
-        );
+        let (use_toolkit, reason) =
+            should_use_toolkit(&Mode::Auto, Some("docker logs my-service"), "tiny", &rules);
 
         assert!(use_toolkit);
         assert_eq!(reason, "always_match");

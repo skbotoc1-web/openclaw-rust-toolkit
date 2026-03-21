@@ -81,7 +81,25 @@ scripts/last-deploy-status.sh --require-success --min-assets 3 --max-age-hours 7
 ```
 
 ### Release integrity
-Each release publishes per-target checksum files (`SHA256SUMS-<target>.txt`) alongside binaries.
+Each release publishes per-target checksum files (`SHA256SUMS-<target>.txt`) alongside binaries, plus keyless Sigstore signatures/certificates (`.sig` + `.pem`) and GitHub provenance attestations.
+
+Verification (example for Linux x86_64):
+```bash
+# 1) checksum validation
+sha256sum -c SHA256SUMS-x86_64-unknown-linux-gnu.txt
+
+# 2) keyless signature verification
+cosign verify-blob \
+  --certificate octk-x86_64-unknown-linux-gnu.tar.gz.pem \
+  --signature octk-x86_64-unknown-linux-gnu.tar.gz.sig \
+  --certificate-identity-regexp "https://github.com/skbotoc1-web/openclaw-rust-toolkit/.github/workflows/release.yml@.*" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  octk-x86_64-unknown-linux-gnu.tar.gz
+
+# 3) provenance attestation verification
+gh attestation verify octk-x86_64-unknown-linux-gnu.tar.gz \
+  --repo skbotoc1-web/openclaw-rust-toolkit
+```
 
 ### Wrapper controls
 ```bash

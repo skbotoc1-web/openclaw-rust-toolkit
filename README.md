@@ -8,6 +8,7 @@ Optional Rust layer for OpenClaw command output: **activate only when useful**, 
 ## Quick value (what you get in practice)
 - Real-world reduction: **~70–85% fewer prompt tokens** on noisy CLI output
 - Deterministic behavior (rules), not black-box summarization
+- Local-first routing foundation: route simple tasks local, escalate to cloud only when needed
 - Works as an optional external layer (upgrade-safe)
 
 ## 60-second verification
@@ -99,6 +100,17 @@ cosign verify-blob \
 # 3) provenance attestation verification
 gh attestation verify octk-x86_64-unknown-linux-gnu.tar.gz \
   --repo skbotoc1-web/openclaw-rust-toolkit
+```
+
+### Router dry-run (policy decision log)
+```bash
+# decision simulation with policy file
+./target/release/octk \
+  --route-task classify \
+  --route-confidence 0.82 \
+  --route-schema-valid true \
+  --route-policy ./policies/router.toml \
+  --emit-route-log
 ```
 
 ### Wrapper controls
@@ -196,6 +208,9 @@ See: `docs/OPENCLAW_INTEGRATION.md`
 - `docs/MOAT_POSITIONING.md`
 - `docs/ENTERPRISE_READINESS.md`
 - `docs/PRODUCT_GUARDRAILS.md`
+- `docs/LOCAL_FIRST_ROUTING_ARCHITECTURE.md`
+- `docs/EXECUTION_PLAN_14D_LOCAL_FIRST.md`
+- `docs/QA_VALIDATION_2026-03-23_LOCAL_FIRST_PR1.md`
 - `SECURITY.md`, `scripts/secret-check.sh`
 
 If you run this in production, open an issue with:

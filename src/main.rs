@@ -8,6 +8,8 @@ use std::fs;
 use std::io::{self, Read};
 use std::path::PathBuf;
 
+mod router;
+
 #[derive(Parser, Debug)]
 #[command(name = "octk", version, about = "OpenClaw Rust Toolkit")]
 struct Cli {
@@ -28,6 +30,30 @@ struct Cli {
 
     #[arg(long, default_value_t = false)]
     emit_flag: bool,
+
+    #[arg(long, value_enum)]
+    route_task: Option<router::TaskClass>,
+
+    #[arg(long)]
+    route_policy: Option<PathBuf>,
+
+    #[arg(long)]
+    route_confidence: Option<f64>,
+
+    #[arg(long)]
+    route_schema_valid: Option<bool>,
+
+    #[arg(long, default_value_t = false)]
+    route_budget_soft_limit: bool,
+
+    #[arg(long, default_value_t = false)]
+    route_budget_hard_limit: bool,
+
+    #[arg(long, default_value_t = false)]
+    route_cloud_required: bool,
+
+    #[arg(long, default_value_t = false)]
+    emit_route_log: bool,
 }
 
 #[derive(Clone, Debug, ValueEnum)]
@@ -411,6 +437,30 @@ fn process_input(
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+
+    if let Some(task_class) = cli.route_task.clone() {
+        let policy = router::load_policy(cli.route_policy.as_deref())?;
+        let input = router::RouteInput {
+            task_class,
+            confidence: cli.route_confidence,
+            schema_valid: cli.route_schema_valid,
+            budget_soft_limit_reached: cli.route_budget_soft_limit,
+            budget_hard_limit_reached: cli.route_budget_hard_limit,
+            cloud_required: cli.route_cloud_required,
+        };
+        let decision = router::decide_route(&input, &policy);
+
+        let route_json = serde_json::to_string_pretty(&decision)?;
+        println!("{}", route_json);
+
+        if cli.emit_route_log {
+            let log_line = router::decision_log_json(&decision)?;
+            eprintln!("[ROUTER_DECISION] {}", log_line);
+        }
+
+        return Ok(());
+    }
+
     let rules = load_rules(cli.rules)?;
 
     let mut input = String::new();

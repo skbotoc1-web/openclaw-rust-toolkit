@@ -5,6 +5,7 @@ Token hygiene infrastructure for agentic CLI workflows.
 
 ## Core thesis
 The moat is **operational reliability + measurable impact**, not just compression.
+Now extended to **local-first routing discipline** (cloud only when needed).
 
 ## Why this wins
 1. **Ops-native integration**

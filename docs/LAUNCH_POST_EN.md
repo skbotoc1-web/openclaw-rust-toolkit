@@ -13,6 +13,7 @@ That increases cost, latency, and context pressure.
 - profile presets (`safe`, `balanced`, `aggressive`)
 - explicit usage markers + measurable token savings
 - local-first router dry-run (policy-based route decisions)
+- local embeddings lane (`route=local_only`, `cloud_calls=0`)
 - fail-open design (no OpenClaw core patching)
 
 ## Real numbers

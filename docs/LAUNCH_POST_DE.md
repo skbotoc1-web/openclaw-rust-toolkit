@@ -13,6 +13,7 @@ Das erhöht Kosten, Latenz und drückt auf das Context Window.
 - Profile (`safe`, `balanced`, `aggressive`)
 - klare Marker + messbare Token-Einsparung
 - Local-First Router Dry-Run (policy-basierte Routenentscheidung)
+- Local Embeddings Lane (`route=local_only`, `cloud_calls=0`)
 - fail-open Design (kein OpenClaw-Core-Patching)
 
 ## Reale Zahlen

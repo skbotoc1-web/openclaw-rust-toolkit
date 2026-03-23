@@ -12,6 +12,7 @@ That increases cost, latency, and context pressure.
 - deterministic condensing (not black-box summarization)
 - profile presets (`safe`, `balanced`, `aggressive`)
 - explicit usage markers + measurable token savings
+- local-first router dry-run (policy-based route decisions)
 - fail-open design (no OpenClaw core patching)
 
 ## Real numbers
@@ -31,5 +32,5 @@ https://github.com/skbotoc1-web/openclaw-rust-toolkit
 ## Ask
 Would love feedback on:
 1. your real-world token savings
-2. missed-debug edge cases
-3. Linux ARM64 binary support priorities
+2. local-first routing thresholds (confidence/budget gates)
+3. missed-debug edge cases

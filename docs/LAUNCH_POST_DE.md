@@ -12,6 +12,7 @@ Das erhöht Kosten, Latenz und drückt auf das Context Window.
 - deterministisches Condensing (kein Black-Box-Summarizing)
 - Profile (`safe`, `balanced`, `aggressive`)
 - klare Marker + messbare Token-Einsparung
+- Local-First Router Dry-Run (policy-basierte Routenentscheidung)
 - fail-open Design (kein OpenClaw-Core-Patching)
 
 ## Reale Zahlen
@@ -30,5 +31,5 @@ https://github.com/skbotoc1-web/openclaw-rust-toolkit
 
 ## Feedback gesucht
 1. eure realen Savings
-2. edge cases bei Debug-Qualität
-3. Priorität Linux ARM64 Binaries
+2. sinnvolle Local-First Schwellen (Confidence/Budget-Gates)
+3. edge cases bei Debug-Qualität

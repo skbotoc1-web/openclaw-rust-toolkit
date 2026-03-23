@@ -1,0 +1,13 @@
+policy_version = "router-v1"
+
+[thresholds]
+min_local_confidence = 0.78
+
+[defaults]
+embed = "local_only"
+classify = "local_then_cloud"
+extract = "local_then_cloud"
+summarize = "local_then_cloud"
+reasoning = "cloud_only"
+high_risk = "cloud_only"
+unknown = "local_then_cloud"

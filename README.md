@@ -113,6 +113,20 @@ gh attestation verify octk-x86_64-unknown-linux-gnu.tar.gz \
   --emit-route-log
 ```
 
+### Local embeddings lane (PR2)
+```bash
+# local-only embedding health
+./target/release/octk --embed-health-check --emit-embed-log
+
+# local embedding + local index append
+./target/release/octk \
+  --embed-input "OpenClaw local embedding test" \
+  --embed-dim 64 \
+  --embed-model octk-local-hash-v1 \
+  --embed-index-path ./rag/local-index.jsonl \
+  --emit-embed-log
+```
+
 ### Wrapper controls
 ```bash
 # default (balanced profile)
@@ -210,7 +224,9 @@ See: `docs/OPENCLAW_INTEGRATION.md`
 - `docs/PRODUCT_GUARDRAILS.md`
 - `docs/LOCAL_FIRST_ROUTING_ARCHITECTURE.md`
 - `docs/EXECUTION_PLAN_14D_LOCAL_FIRST.md`
+- `docs/LOCAL_EMBEDDINGS_LANE_PR2.md`
 - `docs/QA_VALIDATION_2026-03-23_LOCAL_FIRST_PR1.md`
+- `docs/QA_VALIDATION_2026-03-23_LOCAL_EMBEDDINGS_PR2.md`
 - `SECURITY.md`, `scripts/secret-check.sh`
 
 If you run this in production, open an issue with:

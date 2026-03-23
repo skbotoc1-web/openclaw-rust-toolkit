@@ -8,6 +8,7 @@ use std::fs;
 use std::io::{self, Read};
 use std::path::PathBuf;
 
+mod embeddings;
 mod router;
 
 #[derive(Parser, Debug)]
@@ -54,6 +55,30 @@ struct Cli {
 
     #[arg(long, default_value_t = false)]
     emit_route_log: bool,
+
+    #[arg(long)]
+    embed_input: Option<String>,
+
+    #[arg(long)]
+    embed_input_file: Option<PathBuf>,
+
+    #[arg(long, default_value_t = 64)]
+    embed_dim: usize,
+
+    #[arg(long)]
+    embed_id: Option<String>,
+
+    #[arg(long, default_value = "octk-local-hash-v1")]
+    embed_model: String,
+
+    #[arg(long)]
+    embed_index_path: Option<PathBuf>,
+
+    #[arg(long, default_value_t = false)]
+    embed_health_check: bool,
+
+    #[arg(long, default_value_t = false)]
+    emit_embed_log: bool,
 }
 
 #[derive(Clone, Debug, ValueEnum)]
@@ -435,8 +460,54 @@ fn process_input(
     (output, used, final_reason)
 }
 
+fn resolve_embed_input(cli: &Cli) -> Result<Option<String>> {
+    if let Some(inline) = &cli.embed_input {
+        return Ok(Some(inline.clone()));
+    }
+
+    if let Some(path) = &cli.embed_input_file {
+        let content = fs::read_to_string(path)
+            .with_context(|| format!("failed reading embed input file: {}", path.display()))?;
+        return Ok(Some(content));
+    }
+
+    Ok(None)
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
+
+    if cli.embed_health_check {
+        let health = embeddings::local_embedding_health(&cli.embed_model);
+        println!("{}", serde_json::to_string_pretty(&health)?);
+
+        if cli.emit_embed_log {
+            eprintln!("[EMBED_LOCAL_HEALTH] {}", serde_json::to_string(&health)?);
+        }
+
+        return Ok(());
+    }
+
+    if let Some(embed_text) = resolve_embed_input(&cli)? {
+        let record = embeddings::build_local_embedding_record(
+            &embed_text,
+            cli.embed_dim,
+            cli.embed_id.as_deref(),
+            &cli.embed_model,
+        )?;
+
+        if let Some(path) = &cli.embed_index_path {
+            embeddings::append_record_jsonl(path, &record)?;
+        }
+
+        println!("{}", serde_json::to_string_pretty(&record)?);
+
+        if cli.emit_embed_log {
+            eprintln!("[EMBED_LOCAL] {}", serde_json::to_string(&record)?);
+        }
+
+        return Ok(());
+    }
 
     if let Some(task_class) = cli.route_task.clone() {
         let policy = router::load_policy(cli.route_policy.as_deref())?;
@@ -682,6 +753,73 @@ mod tests {
         assert_eq!(output, input);
         assert!(!used);
         assert_eq!(reason, "below_threshold");
+    }
+
+    #[test]
+    fn resolve_embed_input_prefers_inline_value() {
+        let cli = Cli {
+            mode: Mode::Auto,
+            command: None,
+            rules: None,
+            report_format: ReportFormat::Text,
+            report_file: None,
+            emit_flag: false,
+            route_task: None,
+            route_policy: None,
+            route_confidence: None,
+            route_schema_valid: None,
+            route_budget_soft_limit: false,
+            route_budget_hard_limit: false,
+            route_cloud_required: false,
+            emit_route_log: false,
+            embed_input: Some("hello".to_string()),
+            embed_input_file: None,
+            embed_dim: 64,
+            embed_id: None,
+            embed_model: "octk-local-hash-v1".to_string(),
+            embed_index_path: None,
+            embed_health_check: false,
+            emit_embed_log: false,
+        };
+
+        let resolved = resolve_embed_input(&cli).expect("resolve inline");
+        assert_eq!(resolved.as_deref(), Some("hello"));
+    }
+
+    #[test]
+    fn resolve_embed_input_reads_from_file() {
+        let path = std::env::temp_dir().join("octk-embed-input-test.txt");
+        fs::write(&path, "file-text").expect("write temp file");
+
+        let cli = Cli {
+            mode: Mode::Auto,
+            command: None,
+            rules: None,
+            report_format: ReportFormat::Text,
+            report_file: None,
+            emit_flag: false,
+            route_task: None,
+            route_policy: None,
+            route_confidence: None,
+            route_schema_valid: None,
+            route_budget_soft_limit: false,
+            route_budget_hard_limit: false,
+            route_cloud_required: false,
+            emit_route_log: false,
+            embed_input: None,
+            embed_input_file: Some(path.clone()),
+            embed_dim: 64,
+            embed_id: None,
+            embed_model: "octk-local-hash-v1".to_string(),
+            embed_index_path: None,
+            embed_health_check: false,
+            emit_embed_log: false,
+        };
+
+        let resolved = resolve_embed_input(&cli).expect("resolve file");
+        assert_eq!(resolved.as_deref(), Some("file-text"));
+
+        let _ = fs::remove_file(path);
     }
 
     #[test]

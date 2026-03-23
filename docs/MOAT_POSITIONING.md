@@ -12,6 +12,7 @@ Now extended to **local-first routing discipline** (cloud only when needed).
    - Designed for real OpenClaw workflows (profiles, wrapper, deploy-health, fail-open).
 2. **Deterministic behavior**
    - Rule-based condensing with predictable outcomes.
+   - Local embeddings lane with explicit `cloud_calls=0` contract.
 3. **Proof, not promises**
    - Explicit before/after metrics and usage markers (`RUST_TOOLKIT_DETECTED`, `RUST_TOOLKIT_USED`).
 4. **Upgrade-safe architecture**
